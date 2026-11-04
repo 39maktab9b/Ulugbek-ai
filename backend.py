@@ -26,7 +26,7 @@ def init_db():
     # Boshlang'ich test foydalanuvchi
     cursor.execute("""
         INSERT OR IGNORE INTO users (username, password, name, role, age, interests, goals)
-        VALUES ('student1', '1234', 'Mirzo', 'O\'quvchi', '16', 'Astronomiya, Fizika, Python', 'SAT va Olimpiada')
+        VALUES ('student1', '1234', 'Mirzo', 'oquvchi', '16', 'Astronomiya, Fizika, Python', 'SAT va Olimpiada')
     """)
     conn.commit()
     conn.close()
