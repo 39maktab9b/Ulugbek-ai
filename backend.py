@@ -6,7 +6,7 @@ from google.genai import types
 
 app = FastAPI()
 
-# Google GenAI Klienti (O'z API kalitingizni kiriting)
+# Google GenAI Klienti
 client = genai.Client(api_key="AQ.Ab8RN6KuBH71yscSv2vv5zUc7xQKBKvH8_zTN6UljqkrLgRC5Q")
 
 def init_db():
@@ -37,10 +37,6 @@ class ChatRequest(BaseModel):
     username: str
     prompt: str
 
-class ProfileUpdate(BaseModel.model_config == {**BaseModel.model_config} if hasattr(BaseModel, 'model_config') else {}):
-    pass
-
-from pydantic import BaseModel
 class ProfileModel(BaseModel):
     old_username: str
     new_username: str
