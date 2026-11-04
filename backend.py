@@ -37,7 +37,7 @@ class ChatRequest(BaseModel):
     username: str
     prompt: str
 
-class ProfileUpdate(BaseModel.model_config = {**BaseModel.model_config} if hasattr(BaseModel, 'model_config') else {}):
+class ProfileUpdate(BaseModel.model_config == {**BaseModel.model_config} if hasattr(BaseModel, 'model_config') else {}):
     pass
 
 from pydantic import BaseModel
