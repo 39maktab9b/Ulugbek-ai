@@ -7,7 +7,7 @@ from google.genai import types
 app = FastAPI()
 
 # Google GenAI Klienti (O'z API kalitingizni kiriting)
-client = genai.Client(api_key="SIZNING_GEMINI_API_KALITINGIZ")
+client = genai.Client(api_key="AQ.Ab8RN6KuBH71yscSv2vv5zUc7xQKBKvH8_zTN6UljqkrLgRC5Q")
 
 def init_db():
     conn = sqlite3.connect("ulugbek_ai_backend.db")
