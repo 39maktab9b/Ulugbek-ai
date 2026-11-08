@@ -1,12 +1,13 @@
+import os
+import sqlite3
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import sqlite3
 from google import genai
 from google.genai import types
 
 app = FastAPI()
 
-# Google GenAI Klienti
+# Google GenAI Klienti (Yangi SDK va to'g'ri AQ. kalit)
 client = genai.Client(api_key="AQ.Ab8RN6JgRIVjqrcPbmGWPPFaStqLp2Cx6f4i3tst9U-AM3UyEQ")
 
 def init_db():
@@ -80,7 +81,7 @@ def chat_with_ai(data: ChatRequest):
     else:
         name, role, age, interests, goals = "O'quvchi", "O'quvchi", "16", "Ilm-fan", "Talim"
 
-    # AI uchun system instruction (Profilga va Real-time qidiruvga moslashtirilgan)
+    # AI uchun system instruction
     system_instruction = f"""
     Siz Mirzo Ulug'bek nomidagi AI va Muhandislik maktabining bosh intellektual yordamchisisiz.
     Foydalanuvchi ma'lumotlari:
@@ -98,12 +99,12 @@ def chat_with_ai(data: ChatRequest):
 
     try:
         response = client.models.generate_content(
-            model="gemini-flash-lite-latest",
+            model="gemini-2.5-flash",
             contents=data.prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
                 temperature=0.6,
-                tools=[{"google_search": {}}]  # Real vaqtda internetdan qidirish!
+                tools=[{"google_search": {}}]
             ),
         )
         return {"response": response.text}
