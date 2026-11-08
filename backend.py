@@ -8,7 +8,7 @@ from google.genai import types
 app = FastAPI()
 
 # Google GenAI Klienti (Yangi SDK va to'g'ri AQ. kalit)
-client = genai.Client(api_key="AQ.Ab8RN6JgRIVjqrcPbmGWPPFaStqLp2Cx6f4i3tst9U-AM3UyEQ")
+client = genai.Client(api_key="AQ.Ab8RN6L3uDpYee7j933yMI1tSsUtDzsE0E-YpjS90_N2asiwug")
 
 def init_db():
     conn = sqlite3.connect("ulugbek_ai_backend.db")
