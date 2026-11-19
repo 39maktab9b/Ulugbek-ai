@@ -7,11 +7,16 @@ from google.genai import types
 
 app = FastAPI()
 
-# Google GenAI Klienti (v1beta versiyasi bilan AQ. kalitini to'liq qo'llab-quvvatlaydi)
-client = genai.Client(
-    api_key = os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6IlrcMvJRCbHVFcsN-0LnR5L7ZzrkpTF560Ic20a5QGuQ")
-    http_options={'api_version': 'v1beta'}
+GEMINI_API_KEY = os.getenv(
+    "GEMINI_API_KEY",
+    "AQ.Ab8RN6IlrcMvJRCbHVFcsN-0LnR5L7ZzrkpTF560Ic20a5QGuQ",
 )
+
+client = genai.Client(
+    api_key=GEMINI_API_KEY,
+    http_options={"api_version": "v1beta"},
+)
+
 
 def init_db():
     conn = sqlite3.connect("ulugbek_ai_backend.db")
@@ -34,11 +39,14 @@ def init_db():
     conn.commit()
     conn.close()
 
+
 init_db()
+
 
 class ChatRequest(BaseModel):
     username: str
     prompt: str
+
 
 class ProfileModel(BaseModel):
     old_username: str
@@ -50,6 +58,7 @@ class ProfileModel(BaseModel):
     interests: str
     goals: str
 
+
 @app.post("/api/profile/update")
 def update_profile(data: ProfileModel):
     conn = sqlite3.connect("ulugbek_ai_backend.db")
@@ -58,11 +67,19 @@ def update_profile(data: ProfileModel):
         cursor.execute("""
             INSERT OR REPLACE INTO users (username, password, name, role, age, interests, goals)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (data.new_username, data.password, data.name, data.role, data.age, data.interests, data.goals))
-        
+        """, (
+            data.new_username,
+            data.password,
+            data.name,
+            data.role,
+            data.age,
+            data.interests,
+            data.goals,
+        ))
+
         if data.old_username != data.new_username:
             cursor.execute("DELETE FROM users WHERE username = ?", (data.old_username,))
-            
+
         conn.commit()
         conn.close()
         return {"status": "success", "message": "Profil muvaffaqiyatli saqlandi!"}
@@ -70,11 +87,15 @@ def update_profile(data: ProfileModel):
         conn.close()
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.post("/api/chat")
 def chat_with_ai(data: ChatRequest):
     conn = sqlite3.connect("ulugbek_ai_backend.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT name, role, age, interests, goals FROM users WHERE username = ?", (data.username,))
+    cursor.execute(
+        "SELECT name, role, age, interests, goals FROM users WHERE username = ?",
+        (data.username,),
+    )
     user = cursor.fetchone()
     conn.close()
 
@@ -86,15 +107,15 @@ def chat_with_ai(data: ChatRequest):
     system_instruction = f"""
     Siz Mirzo Ulug'bek nomidagi AI va Muhandislik maktabining bosh intellektual yordamchisisiz.
     Foydalanuvchi ma'lumotlari:
-    - Ismi: {name}
-    - Roli: {role}
-    - Yoshi: {age}
-    - Qiziqishlari: {interests}
-    - Maqsadi: {goals}
+- Ismi: {name}
+- Roli: {role}
+- Yoshi: {age}
+- Qiziqishlari: {interests}
+- Maqsadi: {goals}
 
     Qoidalaringiz:
-    1. Har doim foydalanuvchining yoshi, roli va qiziqishlariga moslab chuqur, ilmiy va tushunarli javob bering.
-    2. O'zbek tilida samimiy va Mirzo Ulug'bek merosiga mos tarzda javob qaytaring.
+1. Har doim foydalanuvchining yoshi, roli va qiziqishlariga moslab chuqur, ilmiy va tushunarli javob bering.
+2. O'zbek tilida samimiy va Mirzo Ulug'bek merosiga mos tarzda javob qaytaring.
     """
 
     try:
@@ -103,12 +124,13 @@ def chat_with_ai(data: ChatRequest):
             contents=data.prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
-                temperature=0.6
+                temperature=0.6,
             ),
         )
         return {"response": response.text}
     except Exception as e:
         return {"response": f"AI bilan bog'lanishda xatolik yuz berdi: {str(e)}"}
+
 
 if __name__ == "__main__":
     import uvicorn
