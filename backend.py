@@ -7,7 +7,7 @@ from anthropic import Anthropic
 app = FastAPI()
 
 # Render -> Environment Variables bo'limiga ANTHROPIC_API_KEY nomi bilan kalitni qo'ying
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "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").strip()
 client = Anthropic(api_key=ANTHROPIC_API_KEY) if ANTHROPIC_API_KEY else None
 
 
