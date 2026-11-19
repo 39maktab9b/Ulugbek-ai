@@ -2,20 +2,13 @@ import os
 import sqlite3
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from google import genai
-from google.genai import types
+from anthropic import Anthropic
 
 app = FastAPI()
 
-GEMINI_API_KEY = os.getenv(
-    "GEMINI_API_KEY",
-    "AQ.Ab8RN6IlrcMvJRCbHVFcsN-0LnR5L7ZzrkpTF560Ic20a5QGuQ",
-)
-
-client = genai.Client(
-    api_key=GEMINI_API_KEY,
-    http_options={"api_version": "v1beta"},
-)
+# Render -> Environment Variables bo'limiga ANTHROPIC_API_KEY nomi bilan kalitni qo'ying
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
+client = Anthropic(api_key=ANTHROPIC_API_KEY) if ANTHROPIC_API_KEY else None
 
 
 def init_db():
@@ -90,6 +83,11 @@ def update_profile(data: ProfileModel):
 
 @app.post("/api/chat")
 def chat_with_ai(data: ChatRequest):
+    if not client or not ANTHROPIC_API_KEY:
+        return {
+            "response": "AI bilan bog'lanishda xatolik yuz berdi: ANTHROPIC_API_KEY sozlanmagan."
+        }
+
     conn = sqlite3.connect("ulugbek_ai_backend.db")
     cursor = conn.cursor()
     cursor.execute(
@@ -119,15 +117,20 @@ def chat_with_ai(data: ChatRequest):
     """
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=data.prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.6,
-            ),
+        message = client.messages.create(
+            model="claude-3-5-haiku-latest",
+            max_tokens=1024,
+            temperature=0.6,
+            system=system_instruction,
+            messages=[
+                {"role": "user", "content": data.prompt}
+            ],
         )
-        return {"response": response.text}
+        text_parts = [
+            block.text for block in message.content if getattr(block, "type", None) == "text"
+        ]
+        reply_text = "\n".join(text_parts).strip()
+        return {"response": reply_text}
     except Exception as e:
         return {"response": f"AI bilan bog'lanishda xatolik yuz berdi: {str(e)}"}
 
