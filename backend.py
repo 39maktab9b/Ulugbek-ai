@@ -9,7 +9,7 @@ app = FastAPI()
 
 # Google GenAI Klienti (v1beta versiyasi bilan AQ. kalitini to'liq qo'llab-quvvatlaydi)
 client = genai.Client(
-    api_key="AQ.Ab8RN6IlrcMvJRCbHVFcsN-0LnR5L7ZzrkpTF560Ic20a5QGuQ",
+    api_key = os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6IlrcMvJRCbHVFcsN-0LnR5L7ZzrkpTF560Ic20a5QGuQ")
     http_options={'api_version': 'v1beta'}
 )
 
